@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= dashName %></title>
+  <% if (faviconUrl) { %>
+    <link rel="icon" href="<%= faviconUrl %>">
+  <% } %>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body style="background: url('<%= background %>') center center / cover repeat;">
+  <div class="login-box">
+    <h1><%= dashName %></h1>
+    <% if (dashSubtitle) { %><p><%= dashSubtitle %></p><% } %>
+    <% if (flash && flash.length) { %>
+      <div class="flash"><%= flash[0] %></div>
+    <% } %>
+    <form method="post" action="/login">
+      <input type="text" name="username" placeholder="Email or Username" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <button type="submit">Login</button>
+    </form>
+    <hr>
+    <a href="/auth/discord" class="discord-btn">Login with Discord</a>
+    <hr>
+    <a href="<%= panelUrl %>" class="panel-btn" target="_blank">Go to Panel</a>
+  </div>
+</body>
+</html>
