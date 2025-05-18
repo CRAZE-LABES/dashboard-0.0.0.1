@@ -1,0 +1,23 @@
+{
+  "name": "craze-dash",
+  "version": "1.0.0",
+  "description": "A Minecraft server management dashboard client with Discord/Local auth, MongoDB, and Skyport API integration.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "connect-flash": "^0.1.1",
+    "dotenv": "^16.3.1",
+    "ejs": "^3.1.9",
+    "express": "^4.19.2",
+    "express-session": "^1.17.3",
+    "mongoose": "^8.1.0",
+    "passport": "^0.7.0",
+    "passport-discord": "^0.1.4",
+    "passport-local": "^1.0.0",
+    "socket.io": "^4.7.5",
+    "node-fetch": "^2.6.12"
+  }
+}
