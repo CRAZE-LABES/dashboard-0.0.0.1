@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= dashName %> Dashboard</title>
+  <% if (faviconUrl) { %>
+    <link rel="icon" href="<%= faviconUrl %>">
+  <% } %>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    :root {
+      --primary-color: <%= primaryColor %>;
+      --secondary-color: <%= secondaryColor %>;
+    }
+  </style>
+</head>
+<body style="background: url('<%= background %>') center center / cover repeat;">
+  <header>
+    <h1><%= dashName %></h1>
+    <% if (dashSubtitle) { %><h2><%= dashSubtitle %></h2><% } %>
+    <div class="user-info">
+      Logged in as <%= user.username %>
+      <% if (user.discordCredits) { %> | Discord Credits: <%= user.discordCredits %> <% } %>
+      <a href="/logout">Logout</a>
+      <% if (user.isAdmin) { %> | <a href="/admin">Admin Panel</a> <% } %>
+      | <a href="<%= panelUrl %>" target="_blank" rel="noopener">Go to Panel</a>
+    </div>
+  </header>
+  <main>
+    <section id="servers">
+      <h2>Minecraft Servers</h2>
+      <form id="create-server-form">
+        <input type="text" name="serverName" placeholder="Server Name" required>
+        <select name="serverType" required>
+          <option value="vanilla">Vanilla</option>
+          <option value="spigot">Spigot</option>
+          <option value="forge">Forge</option>
+        </select>
+        <button type="submit">Create Server</button>
+      </form>
+      <div id="server-list"></div>
+    </section>
+    <section id="console" style="display:none;">
+      <h2>Server Console: <span id="console-title"></span></h2>
+      <pre id="console-log"></pre>
+      <input type="text" id="console-input" placeholder="Type command...">
+      <button id="console-send">Send</button>
+    </section>
+  </main>
+  <script>
+    const socket = io();
+    socket.on('servers', servers => {
+      const list = document.getElementById('server-list');
+      list.innerHTML = servers.map(srv =>
+        `<div class="server-card" data-id="${srv.id}">
+          <h3>${srv.name}</h3>
+          <span class="status ${srv.status}">${srv.status}</span>
+          <button onclick="showConsole('${srv.id}', '${srv.name}')">Console</button>
+          <button onclick="sendCmd('${srv.id}','start')">Start</button>
+          <button onclick="sendCmd('${srv.id}','stop')">Stop</button>
+          <button onclick="sendCmd('${srv.id}','restart')">Restart</button>
+        </div>`
+      ).join('');
+    });
+    socket.on('statusUpdate', update => {
+      const card = document.querySelector(`.server-card[data-id="${update.id}"] .status`);
+      if (card) card.textContent = update.status;
+    });
+
+    // Console UI
+    let currentSrvId = null;
+    function showConsole(srvId, srvName) {
+      document.getElementById('console').style.display = '';
+      document.getElementById('console-title').textContent = srvName;
+      document.getElementById('console-log').textContent = '';
+      currentSrvId = srvId;
+      socket.emit('joinConsole', srvId);
+    }
+    socket.on('consoleLog', ({ srvId, line }) => {
+      if (srvId === currentSrvId) {
+        const log = document.getElementById('console-log');
+        log.textContent += line + '\n';
+        log.scrollTop = log.scrollHeight;
+      }
+    });
+    document.getElementById('console-send').onclick = () => {
+      const cmd = document.getElementById('console-input').value;
+      if (!cmd) return;
+      socket.emit('consoleCmd', { srvId: currentSrvId, command: cmd });
+      document.getElementById('console-input').value = '';
+    };
+    function sendCmd(srvId, cmd) {
+      alert('Would send ' + cmd + ' to ' + srvId + ' via Skyport API');
+    }
+
+    // Server creation
+    document.getElementById("create-server-form").onsubmit = function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      fetch('/api/servers', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          serverName: formData.get("serverName"),
+          serverType: formData.get("serverType")
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if(data.success) {
+          alert("Server created! ID: " + data.serverId);
+        } else {
+          alert("Error: " + data.error);
+        }
+      });
+    };
+  </script>
+</body>
+</html>
