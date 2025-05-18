@@ -1,0 +1,67 @@
+:root {
+  --primary-color: #1abc9c;
+  --secondary-color: #2c3e50;
+}
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  background-color: var(--secondary-color);
+}
+header {
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  padding: 1em 2em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+.login-box {
+  background: rgba(255,255,255,0.9);
+  padding: 2em;
+  max-width: 350px;
+  margin: 5em auto;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px #0005;
+  text-align: center;
+}
+.discord-btn {
+  display: inline-block;
+  background: #7289da;
+  color: #fff;
+  padding: 0.5em 1.5em;
+  border-radius: 6px;
+  text-decoration: none;
+  margin-top: 1em;
+}
+.panel-btn {
+  display: inline-block;
+  background: var(--primary-color);
+  color: #fff;
+  padding: 0.5em 1.5em;
+  border-radius: 6px;
+  text-decoration: none;
+  margin-top: 1em;
+}
+.server-card {
+  background: #212121bb;
+  color: #fff;
+  margin: 0.7em;
+  padding: 1em;
+  border-radius: 8px;
+  display: inline-block;
+  min-width: 220px;
+  vertical-align: top;
+}
+.status.online { color: #5f5; }
+.status.offline { color: #f55; }
+#console {
+  background: #1e1e1e;
+  color: #aaffaa;
+  padding: 1em;
+  margin: 2em;
+  border-radius: 6px;
+}
+.flash {
+  color: #d33;
+  margin-bottom: 1em;
+}
