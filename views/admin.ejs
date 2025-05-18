@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin - <%= dashName %></title>
+  <% if (faviconUrl) { %>
+    <link rel="icon" href="<%= faviconUrl %>">
+  <% } %>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    :root {
+      --primary-color: <%= primaryColor %>;
+      --secondary-color: <%= secondaryColor %>;
+    }
+  </style>
+</head>
+<body style="background: url('<%= background %>') center center / cover repeat;">
+  <header>
+    <h1><%= dashName %> - Admin Panel</h1>
+    <% if (dashSubtitle) { %><h2><%= dashSubtitle %></h2><% } %>
+    <a href="/dashboard">Back to Dashboard</a>
+    | <a href="<%= panelUrl %>" target="_blank" rel="noopener">Go to Panel</a>
+  </header>
+  <main>
+    <h2>User Management</h2>
+    <form id="create-user-form">
+      <input type="text" name="username" placeholder="Username" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <label><input type="checkbox" name="isAdmin"> Admin</label>
+      <button type="submit">Create User</button>
+    </form>
+    <div id="user-create-msg"></div>
+    <table>
+      <tr><th>Username</th><th>Discord</th><th>Admin</th></tr>
+      <% users.forEach(u => { %>
+        <tr>
+          <td><%= u.username %></td>
+          <td><%= u.discordId ? 'Yes' : 'No' %></td>
+          <td><%= u.isAdmin ? 'Yes' : 'No' %></td>
+        </tr>
+      <% }) %>
+    </table>
+  </main>
+  <script>
+    document.getElementById("create-user-form").onsubmit = function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      fetch('/admin/create-user', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: formData.get("username"),
+          password: formData.get("password"),
+          isAdmin: formData.get("isAdmin")
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        const msg = document.getElementById("user-create-msg");
+        if(data.success) {
+          msg.style.color = "green";
+          msg.textContent = "User created!";
+          setTimeout(() => window.location.reload(), 1000);
+        } else {
+          msg.style.color = "red";
+          msg.textContent = data.error || "Error";
+        }
+      });
+    }
+  </script>
+</body>
+</html>
